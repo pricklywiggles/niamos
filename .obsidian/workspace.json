@@ -46,12 +46,12 @@
                 "state": {
                   "type": "markdown",
                   "state": {
-                    "file": "wiki/system/manual/PARA Method.md",
-                    "mode": "preview",
+                    "file": "archives/2026/projects/Project - Set Up Obsidian PARA System.md",
+                    "mode": "source",
                     "source": false
                   },
                   "icon": "lucide-file",
-                  "title": "PARA Method"
+                  "title": "Project - Set Up Obsidian PARA System"
                 }
               }
             ],
@@ -345,15 +345,22 @@
   },
   "active": "3ea96898ef0f199c",
   "lastOpenFiles": [
-    "wiki/system/manual/PARA Method.md",
-    "wiki/system/dashboards/Control Panel.md",
-    "wiki/system/dashboards/Areas.md",
+    "wiki/system/assets/control-panel.png",
+    "wiki/system/assets/screenshot.png",
+    "wiki/system/assets",
+    "wiki/system/screenshots/screenshot.png",
+    "wiki/system/screenshots",
+    "wiki/system/screenshot.png",
+    "archives/2026/projects/Project - Set Up Obsidian PARA System.md",
     "wiki/system/dashboards/Archives.md",
-    "wiki/system/dashboards/Tasks.md",
+    "wiki/system/dashboards/Control Panel.md",
     "wiki/system/dashboards/Current Projects.md",
+    "README.md",
+    "wiki/system/manual/PARA Method.md",
+    "wiki/system/dashboards/Areas.md",
+    "wiki/system/dashboards/Tasks.md",
     "wiki/system/dashboards/Current Goal.md",
     "daily/2026-05-23.md",
-    "archives/2026/projects/Project - Set Up Obsidian PARA System.md",
     "archives/2026/projects",
     "archives/2026",
     "archives",
@@ -371,22 +378,18 @@
     "wiki/system/dashboards",
     "wiki/system/manual",
     "wiki/system/manual/Roam Method Overview.md",
-    "wiki/system/manual/PARA Method.excalidraw",
-    "wiki/system/PARA Method.excalidraw.tmp.57384.a994797af789",
     "wiki/system/manual/Goal.md",
     "wiki/system/manual/Habit.md",
     "wiki/system/manual/Naming and Wikilinks.md",
     "wiki/system/manual/Wiki.md",
     "wiki/system/manual/Skills.md",
     "wiki/system/manual/Project.md",
-    "wiki/system/manual/Plugin Stack.md",
     "temp/goal.png",
     "temp/daily_note.png",
     "temp/another_goal.png",
     "temp/area.png",
     "temp/Screenshot 2026-05-22 at 12.45.59 PM.png",
     "temp/Screenshot 2026-05-22 at 1.04.38 PM.png",
-    "temp/project_todos.png",
-    "temp/project.png"
+    "temp/project_todos.png"
   ]
 }
