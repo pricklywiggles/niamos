@@ -1,0 +1,20 @@
+# Personal content — exclude files, keep folder structure via .gitkeep
+archives/*
+!archives/.gitkeep
+areas/*
+!areas/.gitkeep
+daily/*
+!daily/.gitkeep
+goals/*
+!goals/.gitkeep
+habits/*
+!habits/.gitkeep
+projects/*
+!projects/.gitkeep
+
+# Wiki — keep only wiki/system/ tracked; ignore everything else under wiki/
+wiki/*
+!wiki/system/
+
+# macOS noise
+.DS_Store

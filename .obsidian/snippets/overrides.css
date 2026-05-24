@@ -1,0 +1,208 @@
+
+
+/* Make dataviews nicer */
+.block-language-dataview.node-insert-event:has(> .dataview.list-view-ul) {
+  border: 4px dashed rgb(58, 52, 46);
+  border-radius: 1.5rem;
+}
+
+.dataview.list-view-ul {
+  margin: 1rem;
+}
+
+div.dataview-error-box {
+  border-radius: 1.5rem;
+}
+
+.block-language-dataview + .edit-block-button {
+  margin: 0.5rem;
+}
+
+.cm-preview-code-block.cm-embed-block.markdown-rendered.cm-lang-dataview:hover {
+  border-radius: 1.5rem;
+}
+
+/* Make edit view spacing better */
+/* spacing after all headers was too tight */
+.HyperMD-header-2::after {
+    content: "";
+    display: block;
+    margin-bottom: 0.8rem;
+}
+
+
+/* round popovers */
+div.popover {
+  border-radius: 1.5rem;
+  border: 1px solid rgb(58, 52, 46);
+
+  .markdown-embed-link {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+/* round metadata popover */
+.metadata-container {
+  border: 2px solid rgb(58, 52, 46);
+  border-radius: 1.5rem;
+  padding: 1rem;
+  background: #1F1A18;
+}
+
+/* make metadata icons smaller */
+.metadata-property-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* popover when editing metadata properties */
+.suggestion-container.mod-property-value,
+.suggestion-container.mod-property-key {
+  border-radius: 1.5rem;
+  border: 1px solid rgb(58, 52, 46);
+
+  div {
+     border-radius: 1.5rem;
+     border: 1px solid rgb(58, 52, 46);
+  }
+}
+
+/* remove folder indentation lines */
+.nav-folder-children{
+  border: 0;
+}
+.mod-top-left-space {
+  background: #262626;
+}
+.mod-top-left-space .workspace-leaf {
+  background: rgb(58, 52, 46);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  margin: 0.5rem;
+  height: calc(100% - 1rem);
+  padding: 0.25rem;
+  padding-top: 0.5rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+/* Make pinned documents on the side use the correct color */
+.mod-top-left-space .cm-scroller, .mod-top-left-space .markdown-preview-view {
+  background: rgb(58, 52, 46) !important;
+}
+
+.el-pre pre {
+  border-radius: 1.5rem !important;
+  overflow: hidden;
+}
+
+/* leftmost action ribbon */
+.workspace-ribbon {
+  padding-top: 1rem;
+  background:#262626;
+  border: 0;
+  margin: 0.5rem;
+}
+
+/* File explorer */
+.workspace-sidedock-vault-profile {
+  background: #262626 !important;
+  border-top: 0 !important;
+  padding-top: 0 !important;
+  height: 3rem !important;
+  /* padding-top: 0.25rem !important; */
+}
+
+.workspace-split.mod-left-split .workspace-leaf-resize-handle {
+  border: 0;
+}
+
+.markdown-source-view .cm-sizer {
+  /* margin: 0 !important; */
+}
+
+body {
+  --file-line-width: 100ch;
+}
+
+/* dataviews in reading mode on sidebar control panel */
+.mod-top-left-space .markdown-preview-section div.el-pre .node-insert-event {
+  background-color: #262626;
+}
+
+.cm-embed-block.markdown-rendered,
+.cm-embed-block .markdown-rendered .callout,
+.el-div div[data-callout="warning"],
+.el-div div[data-callout="info"],
+.el-pre .block-language-tasks {
+  border-radius: 1.5rem;
+  border: 4px solid rgb(58, 52, 46);
+  padding: 1rem;
+  padding-top: 1.25rem;
+  /* border: 1px solid hsla(0, 0%, 100%, 0.1) !important; */
+
+
+
+}
+
+
+.cm-embed-block.markdown-rendered,
+.cm-embed-block .markdown-rendered .callout,
+.el-div div[data-callout="warning"],
+.el-div div[data-callout="info"] {
+ &:hover {
+    border-style: dashed;
+    border-radius: 1.5rem !important;
+  }
+}
+
+.cm-embed-block .markdown-rendered .callout[data-callout="info"],
+.el-div .callout[data-callout="info"] {
+  border-color: #223041 !important;
+  border: 1px solid hsla(0, 0%, 100%, 0.1) !important;
+}
+
+.cm-embed-block.markdown-rendered .markdown-embed-link {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+/* dataview toolbars */
+.plugin-tasks-toolbar {
+  display: flex important;
+  align-items: center;
+  position: relative;
+
+  label {
+    padding-top: 0.3rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    /* justify-content: center; */
+
+    svg {
+      padding-bottom: 0.25rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+  button {
+   border-radius: 0.5rem;
+   padding: 1rem;
+
+  }
+
+  input {
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  padding-top: 0.25rem;
+
+
+  }
+}
+/* .plugin-tasks-toolbar > div {
+  border-radius: 0.5rem !important;
+  background: rgb(58, 52, 46) !important;
+  border: 1px solid hsla(0, 0%, 100%, 0.1) !important;
+} */

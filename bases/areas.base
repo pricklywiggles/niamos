@@ -1,0 +1,9 @@
+filters:
+  and:
+    - note.type == "area"
+    - file.folder != "templates"
+views:
+  - type: table
+    name: All Areas
+    order:
+      - file.name

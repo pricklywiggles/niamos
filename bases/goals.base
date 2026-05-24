@@ -1,0 +1,13 @@
+filters:
+  and:
+    - note.type == "goal"
+    - note.status == "active"
+    - file.folder != "templates"
+views:
+  - type: table
+    name: Active Goals
+    order:
+      - file.name
+      - areas
+      - next_assessment_date
+      - target_completion_date

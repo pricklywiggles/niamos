@@ -1,0 +1,13 @@
+filters:
+  and:
+    - note.type == "project"
+    - note.status == "active"
+    - file.folder != "templates"
+views:
+  - type: table
+    name: Active Projects
+    order:
+      - file.name
+      - areas
+      - goals
+      - due_date

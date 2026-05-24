@@ -1,0 +1,12 @@
+filters:
+  and:
+    - note.type == "habit"
+    - note.status == "active"
+    - file.folder != "templates"
+views:
+  - type: table
+    name: Active Habits
+    order:
+      - file.name
+      - goals
+      - start_date

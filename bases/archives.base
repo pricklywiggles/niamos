@@ -1,0 +1,16 @@
+filters:
+  and:
+    - note.status == "archived"
+    - file.folder != "templates"
+formulas:
+  ended_on: note.actual_completion_date || note.completion_date || note.established_date
+properties:
+  formula.ended_on:
+    displayName: Ended On
+views:
+  - type: table
+    name: Archives
+    order:
+      - file.name
+      - type
+      - formula.ended_on

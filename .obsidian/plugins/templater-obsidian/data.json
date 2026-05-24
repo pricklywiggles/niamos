@@ -1,0 +1,22 @@
+{
+  "command_timeout": 5,
+  "templates_folder": "templates",
+  "templates_pairs": [["", ""]],
+  "trigger_on_file_creation": true,
+  "auto_jump_to_cursor": false,
+  "enable_system_commands": false,
+  "shell_path": "",
+  "user_scripts_folder": "",
+  "enable_folder_templates": true,
+  "folder_templates": [
+    { "folder": "goals", "template": "templates/goal.md" },
+    { "folder": "areas", "template": "templates/area.md" },
+    { "folder": "projects", "template": "templates/project.md" },
+    { "folder": "habits", "template": "templates/habit.md" },
+    { "folder": "daily", "template": "templates/daily.md" }
+  ],
+  "syntax_highlighting": true,
+  "syntax_highlighting_mobile": false,
+  "enabled_templates_hotkeys": [""],
+  "startup_templates": [""]
+}
