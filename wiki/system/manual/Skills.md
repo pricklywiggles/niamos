@@ -6,7 +6,7 @@ type: wiki
 
 Vault-local Claude skills live in `.claude/skills/`. Each one wraps a workflow that's tedious to do by hand and benefits from determinism. Skills call the [[Plugin Stack|Obsidian CLI]] and, where atomicity matters, delegate to Python scripts with rollback.
 
-## The five skills
+## The skills
 
 | Skill | What it does | Triggers on |
 |---|---|---|
@@ -15,6 +15,7 @@ Vault-local Claude skills live in `.claude/skills/`. Each one wraps a workflow t
 | **archive** | Archives a Goal/Project/Habit (status flip + completion date + optional log entry + file move to `archives/<year>/<type>/`), atomically via `scripts/archive.py`. Also handles un-archive via `scripts/unarchive.py`. See [[Archives]]. | "archive this", "mark done", "shipped", "finished", "wrap up" / "unarchive", "reopen", "reactivate" |
 | **daily-review** | Morning or evening flow on the daily note. Morning: find prior daily, surface what didn't get done, offer to carry forward. Evening: surface what got done, prompt for highlights, preview tomorrow. See [[Daily]]. | "morning planning", "let's plan today" → morning / "evening review", "wrap up the day", "what's tomorrow" → evening |
 | **audit** | Vault-wide schema validator. Scans for drift (status↔folder mismatch), missing required fields, naming violations, stale active items, frontmatter health, orphan wikilinks. Read-only by default; offers per-finding fix actions on request. Uses `scripts/audit.py`. | "audit", "what's broken", "check for issues", "validate the vault", "find drift" |
+| **anytype-import** | Per-page migration from the user's self-hosted Anytype (REST API on `:31009`). Fetches via the bundled `scripts/anytype.py`, carries icons (emoji or file → `wiki/assets/icons/`), flags the API's known cover gap (banners must be supplied manually), and asks before recursing into children. Defaults to [[Wiki]] type. Never bulk-imports. | "import from anytype", "import the <name> page", "transfer this anytype page", "migrate <name> from anytype" |
 
 ## Common patterns across skills
 

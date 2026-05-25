@@ -21,7 +21,9 @@ The Core Daily Notes plugin (configured `folder=daily`, `format=YYYY-MM-DD`, bla
 
 ## Body sections (template ships these, in order)
 
-- `## Notes` — prose, scratch space, inline `- [ ]` checkboxes for ad-hoc tasks. First so the human input lands before the auto-generated blocks below.
+- `## Todo` — checkbox tasks for the day. Seeded with `- [ ] Morning review`. The morning daily-review flow appends carried-forward unfinished items from yesterday's body (excluding `## Habits` — those re-derive from cadence).
+- `## Habits` — auto-populated by morning daily-review with today's firing habit tasks (see [[Habit]] for cadence semantics). Plain `- [ ] <name>` lines. Check items off here as you do them; evening daily-review writes the completion date back to the habit page's `- last:` field.
+- `## Notes` — prose, scratch space, inline `- [ ]` checkboxes for ad-hoc thoughts.
 - `## Highlights` — what's worth remembering from this day. Captured by the [[Skills|daily-review skill]] in its evening flow.
 - `## Today` — Dataview block surfacing items hitting their date marker today: [[Goal]]s whose `next_assessment_date` or `target_completion_date` is today, [[Project]]s whose `due_date` is today. See [[Bases and Dataview]] for query syntax.
 - `## Tasks` — Tasks plugin query block: `(due on <date>) OR (scheduled on <date>)`. Shows all tasks for the day regardless of done/not-done status — completed items render with a strikethrough so they're visually distinct. Renders live in reading mode.
@@ -35,8 +37,8 @@ Tasks elsewhere (in [[Project]] files, etc.) need explicit date emojis to surfac
 ## The daily-review skill
 
 The [[Skills|daily-review skill]] is the main workflow for working with Daily notes. Two modes:
-- **Morning**: opens today, finds the most recent prior daily, surfaces what didn't get done (overdue tasks + inline incomplete from the prior daily), offers to carry them forward by editing source files to reschedule.
-- **Evening**: opens today, surfaces what got done today (`✅ <date>` matches), prompts for highlights and appends them, previews tomorrow's commitments.
+- **Morning**: opens today, finds the most recent prior daily, carries forward unfinished inline items (excluding the prior daily's `## Habits` section), inserts today's firing habit tasks into `## Habits`.
+- **Evening**: opens today, prompts to mark any unchecked `## Habits` complete, writes back completion dates to each matching habit page's `- last:` field, prompts for highlights, previews tomorrow's commitments.
 
 ## Lifecycle
 

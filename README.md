@@ -62,8 +62,31 @@ Documented in [Plugin Stack.md](wiki/system/manual/Plugin%20Stack.md). The load-
 The structure is opinionated but not personal. To adapt it:
 
 1. Clone into a fresh directory
-2. Open as an Obsidian vault, install the plugins listed in `wiki/system/manual/Plugin Stack.md`
-3. Read `wiki/system/manual/PARA Method.md` end-to-end
-4. Start using the `create-page` skill in Claude Code to build out your own Goals/Areas/Projects
+2. Open as an Obsidian vault, install the community plugins (see below)
+3. Copy `wiki/system/dashboards/Control Panel (example).md` to `Control Panel.md` and pin it — the original is gitignored as personal
+4. Read `wiki/system/manual/PARA Method.md` end-to-end
+5. Start using the `create-page` skill in Claude Code to build out your own Goals/Areas/Projects
 
 The skills assume Claude Code with the Obsidian Terminal plugin (or any shell rooted in the vault). `CLAUDE.md` at the repo root is what teaches Claude the conventions.
+
+### Installing the plugins
+
+Plugin vendored code (`main.js`, `styles.css`) is gitignored — only each plugin's `data.json` (config) and `manifest.json` (identity) are tracked. Install the plugins yourself; on first enable, Obsidian reads the tracked `data.json` and your settings restore automatically.
+
+In Obsidian: **Settings → Community plugins → Browse**, install and enable each:
+
+| Plugin | Role |
+|---|---|
+| Templater | Applies type templates on file creation (folder→template mappings live in tracked `data.json`) |
+| Dataview | Backlink slices on Goal/Area pages, `## Today` block in dailies |
+| Tasks | Checkbox tasks with date inference (`useFilenameAsScheduledDate: true` scoped to `daily/`) |
+| Calendar | Sidebar daily-note navigation |
+| Iconize (a.k.a. Icon Folder) | Folder/file icon customization |
+| Excalidraw | Optional, drawing tool |
+| Terminal | Embedded shell — Claude Code runs inside this |
+| Pretty Properties | Frontmatter pills, banner/icon/cover rendering |
+| Markdown Table Checkboxes | Interactive `- [ ]` inside markdown tables |
+
+**Bases** is a core plugin in Obsidian 1.9+; enable under **Settings → Core plugins**.
+
+**Hot Reload** (optional, dev-only) is gitignored entirely. Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) from `https://github.com/pjeby/hot-reload` only if you're authoring Obsidian plugins.

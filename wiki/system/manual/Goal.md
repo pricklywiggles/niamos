@@ -30,8 +30,9 @@ The template ships these sections, in order:
 - `## Weekly Progress` — narrative notes by week.
 - `## Active Projects` — Dataview block listing Projects whose `goals:` frontmatter points to this Goal.
 - `## Active Habits` — same for Habits.
+- `## Completed Projects and Habits` — combined Dataview list of archived Projects and Habits that pointed to this Goal, sorted by ended date (newest first). Uses `default(completion_date, established_date)` to sort across the two types' different completion-date fields.
 
-The two Dataview blocks use `FROM [[]]` (the empty-wikilink "this file" idiom) — they surface backlinks from Projects/Habits that declared this Goal in their frontmatter. The owner doesn't have to list active children manually.
+The Dataview blocks use `FROM [[]]` (the empty-wikilink "this file" idiom) — they surface backlinks from Projects/Habits that declared this Goal in their frontmatter. The owner doesn't have to list children manually. Archived children still surface in the completed block even though the file moved to `archives/<year>/<type>/`, because the wikilink in their frontmatter is preserved across the move and the query filters by `status: archived` (not folder path) per the [[Archives]] query convention.
 
 ## Relationship to other types
 

@@ -80,6 +80,24 @@ scope — Obsidian's native "Show unresolved links" view handles those.
 |---|---|---|
 | `orphan-frontmatter-link` (error) | A wikilink in a frontmatter list field whose target file doesn't exist in the vault | Two paths: (a) remove the link if it shouldn't be there; (b) create the missing page via `/create-page`. User picks. |
 
+## habits
+
+Per-task health for the cadence-driven habit system (see [[Habit]] for the
+format spec). Lines under `## Tasks` in active habit pages must parse as
+`- [ ] <name> - <cadence> - last: <YYYY-MM-DD or empty>`.
+
+| Rule | What it detects | Severity | Fix |
+|---|---|---|---|
+| `malformed-habit-task` | A `- [ ]` line under `## Tasks` that doesn't have the `- <cadence>` segment | error | Edit the line to add `- <cadence>` |
+| `unknown-cadence` | Cadence isn't `daily`, `weekly`, `every Nd/Nw`, `weekdays`, `weekends`, a weekday name, or a known smushed/comma combo | error | Fix the cadence token (see [[Habit]] for the full vocab) |
+| `invalid-last-date` | `last:` value isn't ISO `YYYY-MM-DD` | error | Edit to `YYYY-MM-DD` or leave empty |
+| `habit-task-stale` (warning) | Interval-cadence task whose `last:` is more than 3× the cadence ago (e.g. `daily` task last:7 days ago, `every 7d` task last:35 days ago) | warning | Either actually do the task, or check that evening review is running consistently — silent contract failure looks like this |
+| `habit-task-collision` (warning) | Two active habits have task lines with the same name (case-insensitive) — evening write-back uses first match | warning | Rename one to disambiguate |
+
+Stale doesn't apply to calendar-cadence tasks (weekday tokens) since their
+firing is decoupled from `last:`. The audit could be extended to flag a
+`mon` task that hasn't been completed in 3 weeks; left out of v1.
+
 ## severity legend
 
 - `error` — schema violation that breaks queries or workflows. Fix

@@ -5,7 +5,9 @@
     "fontSize": 16,
     "emojiStyle": "native",
     "iconColor": null,
-    "recentlyUsedIcons": [],
+    "recentlyUsedIcons": [
+      "LiTowerControl"
+    ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
     "extraMargin": {
@@ -14,7 +16,7 @@
       "bottom": 0,
       "left": 0
     },
-    "iconInTabsEnabled": false,
+    "iconInTabsEnabled": true,
     "iconInTitleEnabled": false,
     "iconInTitlePosition": "above",
     "iconInFrontmatterEnabled": false,
@@ -26,6 +28,7 @@
     "iconIdentifier": ":",
     "lucideIconPackType": "native",
     "debugMode": false,
-    "useInternalPlugins": false
-  }
+    "useInternalPlugins": true
+  },
+  "wiki/system/dashboards/Control Panel.md": "LiTowerControl"
 }

@@ -1,9 +1,10 @@
 # Evening workflow
 
-The evening flow has three jobs:
+The evening flow has four jobs:
 1. Open today's daily note and surface what got done.
-2. Capture the day's highlights.
-3. Preview tomorrow's commitments.
+2. Write back habit completions to their habit pages.
+3. Capture the day's highlights.
+4. Preview tomorrow's commitments.
 
 ## Step 1: Open today, surface what got done
 
@@ -27,6 +28,36 @@ the user already lived through the day; a snapshot is enough.
 
 If zero tasks completed: say "no completed tasks logged today" without
 judgment. Some days are like that, and the skill shouldn't moralize.
+
+## Step 1.5: Habit write-back
+
+Before prompting for highlights, conditionally handle unchecked habits
+and write back completions.
+
+First, check today's daily's `## Habits` section:
+- If any `- [ ]` lines remain (uncompleted habit tasks), prompt the user
+  via AskUserQuestion: "N habit tasks are still unchecked: <names>. Want
+  to mark any complete?" with options: "All of them done", "None — leave
+  unchecked", "Other" (free-form: "1, 3" to mark specific ones).
+- For each task the user wants to mark done, Edit today's daily to flip
+  `- [ ]` → `- [x]` and append ` ✅ <today>` to the line.
+- If `## Habits` is missing entirely, or every line is already checked,
+  skip the prompt.
+
+Then run the habits script in evening mode:
+
+```
+.claude/skills/daily-review/scripts/habits.py evening <today>
+```
+
+It scans today's daily's `## Habits` section for `- [x]` lines, matches
+each name (case-insensitive) against active-habit task lines, and
+rewrites the matching `- last:` to today's date — atomically per habit
+page. Returns JSON `{updated: [...], unchecked: [...]}`.
+
+Surface the count briefly: "Wrote back N habit completions." If the
+script reports collisions (same name across two habits), the audit skill
+catches that — don't try to disambiguate at evening-review time.
 
 ## Step 2: Prompt for highlights
 

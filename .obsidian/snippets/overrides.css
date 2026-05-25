@@ -1,9 +1,15 @@
 
-
+body {
+  --color-dark-gray: hsla(0, 0%, 100%, 0.1);
+  --color-background-light: rgb(58, 52, 46);
+  --color-background: #262626;
+  --color-text: hsl( 129, 31.9%, calc(46.7% + 10%) );
+  --border-radius: 0.8rem;
+}
 /* Make dataviews nicer */
 .block-language-dataview.node-insert-event:has(> .dataview.list-view-ul) {
   border: 4px dashed rgb(58, 52, 46);
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
 }
 
 .dataview.list-view-ul {
@@ -11,7 +17,7 @@
 }
 
 div.dataview-error-box {
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
 }
 
 .block-language-dataview + .edit-block-button {
@@ -19,7 +25,7 @@ div.dataview-error-box {
 }
 
 .cm-preview-code-block.cm-embed-block.markdown-rendered.cm-lang-dataview:hover {
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
 }
 
 /* Make edit view spacing better */
@@ -33,7 +39,7 @@ div.dataview-error-box {
 
 /* round popovers */
 div.popover {
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
   border: 1px solid rgb(58, 52, 46);
 
   .markdown-embed-link {
@@ -44,8 +50,8 @@ div.popover {
 
 /* round metadata popover */
 .metadata-container {
-  border: 2px solid rgb(58, 52, 46);
-  border-radius: 1.5rem;
+  border: 1px solid rgb(58, 52, 46);
+  border-radius: var(--border-radius);
   padding: 1rem;
   background: #1F1A18;
 }
@@ -59,11 +65,11 @@ div.popover {
 /* popover when editing metadata properties */
 .suggestion-container.mod-property-value,
 .suggestion-container.mod-property-key {
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
   border: 1px solid rgb(58, 52, 46);
 
   div {
-     border-radius: 1.5rem;
+     border-radius: var(--border-radius);
      border: 1px solid rgb(58, 52, 46);
   }
 }
@@ -77,13 +83,12 @@ div.popover {
 }
 .mod-top-left-space .workspace-leaf {
   background: rgb(58, 52, 46);
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
   overflow: hidden;
   margin: 0.5rem;
   height: calc(100% - 1rem);
   padding: 0.25rem;
   padding-top: 0.5rem;
-  border: 1px solid hsla(0, 0%, 100%, 0.1);
 }
 
 /* Make pinned documents on the side use the correct color */
@@ -103,6 +108,50 @@ div.popover {
   border: 0;
   margin: 0.5rem;
 }
+
+.workspace-tabs .workspace-tab-header {
+  background: var(--color-background) !important;
+}
+
+/* .workspace-leaf-content[data-type="calendar"], */
+/* .mod-top-right-space .workspace-leaf-content:has([data-type="calendar"]) {
+  background: var(--color-background);
+
+  .view-content {
+    background: var(--color-background-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 0.5rem;
+    width: calc(100% - 0.5rem);
+    height: calc(100% - 3.5rem);
+    padding: 0.25rem;
+    padding-top: 0.5rem;
+  }
+
+
+} */
+
+.workspace-leaf-content[data-type="calendar"]  {
+  margin-top: -0.6rem;
+}
+
+/* calendar */
+.workspace-tab-container {
+  background: var(--color-background);
+}
+
+.workspace-split.mod-left-split .workspace-leaf {
+   background: var(--color-background-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    width: calc(100% - 0.5rem);
+    padding: 0.25rem;
+    padding-top: 0.5rem;
+    border: 1px solid hsla(0, 0%, 100%, 0.05);
+}
+
 
 /* File explorer */
 .workspace-sidedock-vault-profile {
@@ -135,7 +184,7 @@ body {
 .el-div div[data-callout="warning"],
 .el-div div[data-callout="info"],
 .el-pre .block-language-tasks {
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
   border: 4px solid rgb(58, 52, 46);
   padding: 1rem;
   padding-top: 1.25rem;
@@ -192,17 +241,39 @@ body {
 
   }
 
+  /* filter input boxes */
   input {
-  margin-top: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid hsla(0, 0%, 100%, 0.1);
-  padding-top: 0.25rem;
-
-
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    padding-top: 0.25rem;
   }
 }
-/* .plugin-tasks-toolbar > div {
-  border-radius: 0.5rem !important;
-  background: rgb(58, 52, 46) !important;
-  border: 1px solid hsla(0, 0%, 100%, 0.1) !important;
-} */
+
+/* split resizer handles */
+.workspace-split .workspace-leaf-resize-handle {
+  border: 0px solid transparent;
+  &:hover {
+    /* width: 90% !important; */
+    /* border: 10px solid blue; */
+    display: flex;
+    background: var(--color-background);
+    height: 0.5rem !important;
+    justify-content: center;
+    align-items: flex-end;
+    border: 0px;
+    /* display: flex;
+    border: 0px solid transparent;
+    background: transparent;
+    width: 100% !important;
+    height: 5rem !important; */
+
+    &::after {
+      content: "";
+      width: 90% !important;
+      height: 0.3rem;
+      border-radius: 1rem;
+      background: var(--color-text);
+    }
+  }
+}

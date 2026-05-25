@@ -5,5 +5,8 @@
   "obsidian-excalidraw-plugin",
   "dataview",
   "obsidian-tasks-plugin",
-  "templater-obsidian"
+  "templater-obsidian",
+  "pretty-properties",
+  "table-checkboxes",
+  "calendar"
 ]

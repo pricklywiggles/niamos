@@ -28,3 +28,11 @@ LIST
 FROM [[]]
 WHERE type = "habit" AND status = "active"
 ```
+
+## Completed Projects and Habits
+```dataview
+LIST
+FROM [[]]
+WHERE (type = "project" OR type = "habit") AND status = "archived"
+SORT default(completion_date, established_date) DESC
+```

@@ -52,10 +52,16 @@ either emoji-date and filter to those where the date is ≤ prior-daily's
 date.
 
 **(B) Inline `- [ ]` checkboxes written directly in the prior daily's
-body** (not Tasks-plugin queries, but actual checkbox lines in `## Notes`
-or `## Highlights`). Read the prior daily file and grep for `- [ ]` lines
-in the body. These are second-class — they don't have a due date — so
-treat them as "stuff the user jotted down and never finished".
+body** (not Tasks-plugin queries, but actual checkbox lines in `## Todo`,
+`## Notes`, or `## Highlights`). Read the prior daily file and grep for
+`- [ ]` lines in the body. These are second-class — they don't have a due
+date — so treat them as "stuff the user jotted down and never finished".
+
+**Explicitly exclude the prior daily's `## Habits` section** from this
+scan. Habit tasks have their own cadence-driven scheduling (see Step 5);
+yesterday's unchecked habit task either fires again today on its own
+cadence or it doesn't — carrying it forward as an inline checkbox would
+double-insert.
 
 ## Step 4: Surface and ask
 
@@ -82,16 +88,46 @@ plugin block in today's daily will pick it up automatically because the
 new date matches today.
 
 For (B) inline checkboxes: copy each one verbatim into today's daily
-note's `## Notes` section. Edit the today daily, inserting the lines
-right after `## Notes`. Optionally suggest the user convert them to
-proper Tasks-syntax (with a due date) but don't do it for them — that's
-a judgment call about whether the task is real or just a thought.
+note's `## Todo` section. Edit the today daily, inserting the lines at
+the end of the `## Todo` block (after any existing checkboxes). Optionally
+suggest the user convert them to proper Tasks-syntax (with a due date) but
+don't do it for them — that's a judgment call about whether the task is
+real or just a thought.
+
+## Step 5: Insert today's habit-driven tasks
+
+Run the habits script in morning mode:
+
+```
+.claude/skills/daily-review/scripts/habits.py morning <today>
+```
+
+It walks every active habit page, parses each `- [ ]` line in `## Tasks`
+as `<name> - <cadence>[ - last: <date>]`, and emits a JSON list of tasks
+whose cadence fires today (interval cadences fire when `(today - last)
+>= N` or `last:` is empty; weekday cadences fire when today's weekday
+matches).
+
+Insert each fired task into today's daily under `## Habits` as a plain
+`- [ ] <name>` line. Use Edit, appending after the `## Habits` heading
+in the order the script returned them. Before inserting, dedup against
+any `- [ ]` or `- [x]` line already in today's `## Habits` (case-
+insensitive name match) — this makes re-running morning review
+idempotent.
+
+If today's daily was created before the template update and lacks a
+`## Habits` section, insert one (between `## Todo` and `## Notes`) before
+adding the fired tasks. Don't reload the file or restart Obsidian —
+plain Edit suffices.
+
+If the script returns an empty list, do nothing. Don't print "no habits
+today" — the empty `## Habits` section speaks for itself.
 
 ## Step 6: Close
 
 One short summary line: "Carried forward 3 tasks, 1 inline note.
-`<today>` is open." Or, if no carryover: "Nothing to carry. `<today>`
-is open."
+4 habits queued. `<today>` is open." Or, if nothing: "Nothing to carry.
+`<today>` is open."
 
 Don't list everything you did. The summary's job is "yes, I did the
 thing", not "here's a detailed receipt".

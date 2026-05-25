@@ -2,6 +2,10 @@
 type: daily
 date: <% tp.file.title %>
 ---
+## Todo
+- [ ] Morning review
+
+## Habits
 
 ## Notes
 - 

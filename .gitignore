@@ -16,5 +16,24 @@ projects/*
 wiki/*
 !wiki/system/
 
+# Personal dashboard — the example version (Control Panel (example).md) is tracked instead
+wiki/system/dashboards/Control Panel.md
+
 # macOS noise
 .DS_Store
+
+# Obsidian per-machine workspace state — leaks lastOpenFiles paths
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Obsidian plugin vendored code — install via community store; only data.json + manifest.json are tracked
+.obsidian/plugins/*/*
+!.obsidian/plugins/*/data.json
+!.obsidian/plugins/*/manifest.json
+
+# Hot Reload is a dev-only plugin (in-development plugin auto-reload); install via BRAT if needed
+.obsidian/plugins/hot-reload/

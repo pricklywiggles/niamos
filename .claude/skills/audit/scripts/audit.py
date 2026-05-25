@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Vault-wide schema validator. Read-only. Prints JSON findings grouped by category.
 
-Categories: drift, fields, naming, stale, frontmatter, wikilinks
+Categories: drift, fields, naming, stale, frontmatter, wikilinks, habits
 
 Usage:
     audit.py [--scope <folder>] [--category <name>]
@@ -66,6 +66,14 @@ ASSESSMENT_OVERDUE_DAYS = 7
 WIKILINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]")
 FM_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 STALE_ALIAS_RE = re.compile(r"^(Goal|Area|Project|Habit)\s*-\s*$")
+
+# --- Habit task parsing (mirrors .claude/skills/daily-review/scripts/habits.py) ---
+HABIT_TASK_RE = re.compile(r"^- \[[ xX]\] (.+)$")
+HABIT_LAST_RE = re.compile(r"\s-\s*last:\s*(.*)$")
+HABIT_WEEKDAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
+HABIT_SMUSHED = {"mwf", "tth", "mth", "mtwthf", "satsun", "weekdays", "weekends"}
+HABIT_STALE_MULTIPLIER = 3  # interval task is "stale" if last > N * cadence ago
+HABIT_DONE_SUFFIX_RE = re.compile(r"\s*✅\s+\d{4}-\d{2}-\d{2}\s*$")
 
 
 def parse_frontmatter(text):
@@ -146,6 +154,66 @@ def parse_date(value):
         return datetime.date.fromisoformat(value.strip())
     except ValueError:
         return None
+
+
+def parse_habit_task_line(line):
+    """Parse `- [<status>] <name> - <cadence>[ - last: <date>]`.
+
+    Returns (name, cadence_str, last_str_or_None) or None.
+    """
+    m = HABIT_TASK_RE.match(line)
+    if not m:
+        return None
+    rest = m.group(1)
+    last_str = None
+    m_last = HABIT_LAST_RE.search(rest)
+    if m_last:
+        last_str = m_last.group(1).strip() or None
+        rest = rest[: m_last.start()]
+    sep_idx = rest.rfind(" - ")
+    if sep_idx == -1:
+        return None
+    name = rest[:sep_idx].strip()
+    cadence_str = rest[sep_idx + 3 :].strip()
+    cadence_str = HABIT_DONE_SUFFIX_RE.sub("", cadence_str).strip()
+    if not name or not cadence_str:
+        return None
+    return (name, cadence_str, last_str)
+
+
+def parse_habit_cadence(token):
+    """Returns ('interval', N_days) or ('weekdays', set) or None."""
+    token = token.strip().lower()
+    if token == "daily":
+        return ("interval", 1)
+    if token == "weekly":
+        return ("interval", 7)
+    m = re.match(r"^every\s+(\d+)\s*d$", token)
+    if m:
+        return ("interval", int(m.group(1)))
+    m = re.match(r"^every\s+(\d+)\s*w$", token)
+    if m:
+        return ("interval", int(m.group(1)) * 7)
+    parts = [p.strip() for p in token.split(",")] if "," in token else [token]
+    for p in parts:
+        if p not in HABIT_WEEKDAYS and p not in HABIT_SMUSHED:
+            return None
+    return ("weekdays", set(parts))
+
+
+def extract_section_lines(text, heading):
+    """Return list of lines under `heading` until next `## ` or EOF, or None if missing."""
+    out = []
+    in_section = False
+    for line in text.splitlines():
+        if line.strip() == heading:
+            in_section = True
+            continue
+        if in_section and line.startswith("## "):
+            break
+        if in_section:
+            out.append(line)
+    return out if in_section else None
 
 
 def make_finding(category, severity, file, rule, detail, fix):
@@ -251,6 +319,39 @@ def check_file(rel_path, abs_path, all_filenames, today):
                 findings.append(make_finding("stale", "info", rel_path, "goal-assessment-overdue",
                     f"Goal next_assessment_date={assess.isoformat()} is {(today - assess).days} days in the past", None))
 
+    # habits: per-task checks (active habit pages only)
+    if expected_type == "habit" and not in_archives and fm.get("status") == "active":
+        body = extract_section_lines(text, "## Tasks")
+        if body is not None:
+            for line in body:
+                if not line.startswith("- ["):
+                    continue
+                parsed = parse_habit_task_line(line)
+                if parsed is None:
+                    findings.append(make_finding("habits", "error", rel_path, "malformed-habit-task",
+                        f"Task line doesn't parse: '{line.strip()}'", None))
+                    continue
+                name, cadence_str, last_str = parsed
+                cadence = parse_habit_cadence(cadence_str)
+                if cadence is None:
+                    findings.append(make_finding("habits", "error", rel_path, "unknown-cadence",
+                        f"Cadence '{cadence_str}' not recognized for task '{name}'", None))
+                    continue
+                if last_str:
+                    d = parse_date(last_str)
+                    if d is None:
+                        findings.append(make_finding("habits", "error", rel_path, "invalid-last-date",
+                            f"last:'{last_str}' is not ISO YYYY-MM-DD for task '{name}'", None))
+                        continue
+                    kind, value = cadence
+                    if kind == "interval":
+                        age = (today - d).days
+                        threshold = value * HABIT_STALE_MULTIPLIER
+                        if age > threshold:
+                            findings.append(make_finding("habits", "warning", rel_path, "habit-task-stale",
+                                f"Task '{name}' (cadence {cadence_str}) last:{d.isoformat()} is {age} days ago — past {HABIT_STALE_MULTIPLIER}x cadence threshold ({threshold} days). Either you're missing it or evening write-back isn't running.",
+                                None))
+
     # wikilinks (frontmatter orphans)
     for field_name in ("areas", "goals"):
         items = fm.get(field_name)
@@ -271,6 +372,38 @@ def check_file(rel_path, abs_path, all_filenames, today):
     return findings
 
 
+def check_habit_collisions(vault_root):
+    """Cross-file: flag task names that appear in multiple active habits."""
+    occurrences = {}  # name_lower -> list[(rel_path, original_name)]
+    for path in sorted((vault_root / "habits").glob("*.md")):
+        text = path.read_text()
+        fm = parse_frontmatter(text)
+        if not fm or fm.get("type") != "habit" or fm.get("status") != "active":
+            continue
+        body = extract_section_lines(text, "## Tasks")
+        if body is None:
+            continue
+        rel_path = str(path.relative_to(vault_root))
+        for line in body:
+            parsed = parse_habit_task_line(line)
+            if parsed is None:
+                continue
+            name = parsed[0]
+            occurrences.setdefault(name.lower(), []).append((rel_path, name))
+
+    findings = []
+    for occ in occurrences.values():
+        if len(occ) < 2:
+            continue
+        files = sorted({rel for rel, _ in occ})
+        for rel_path, original in occ:
+            others = [f for f in files if f != rel_path]
+            findings.append(make_finding("habits", "warning", rel_path, "habit-task-collision",
+                f"Task '{original}' has the same name (case-insensitive) as a task in: {', '.join(others)}. Evening write-back uses first match; rename one to disambiguate.",
+                None))
+    return findings
+
+
 def collect_all_filenames(vault_root):
     """Set of all .md filenames (basenames) in the vault, excluding dotfile paths and templates/."""
     names = set()
@@ -287,7 +420,7 @@ def collect_all_filenames(vault_root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--scope", help="Limit scan to a folder (vault-relative)")
-    parser.add_argument("--category", choices=["drift", "fields", "naming", "stale", "frontmatter", "wikilinks"])
+    parser.add_argument("--category", choices=["drift", "fields", "naming", "stale", "frontmatter", "wikilinks", "habits"])
     args = parser.parse_args()
 
     today = datetime.date.today()
@@ -307,6 +440,8 @@ def main():
             continue
         rel_path = str(path.relative_to(VAULT_ROOT))
         findings.extend(check_file(rel_path, path, all_filenames, today))
+
+    findings.extend(check_habit_collisions(VAULT_ROOT))
 
     if args.category:
         findings = [f for f in findings if f["category"] == args.category]
