@@ -8,7 +8,7 @@ body {
 }
 /* Make dataviews nicer */
 .block-language-dataview.node-insert-event:has(> .dataview.list-view-ul) {
-  border: 4px dashed rgb(58, 52, 46);
+  border: 4px dashed var(--color-background-light);
   border-radius: var(--border-radius);
 }
 
@@ -40,7 +40,7 @@ div.dataview-error-box {
 /* round popovers */
 div.popover {
   border-radius: var(--border-radius);
-  border: 1px solid rgb(58, 52, 46);
+  border: 1px solid var(--color-background-light);
 
   .markdown-embed-link {
     margin-top: 1rem;
@@ -50,7 +50,7 @@ div.popover {
 
 /* round metadata popover */
 .metadata-container {
-  border: 1px solid rgb(58, 52, 46);
+  border: 1px solid var(--color-background-light);
   border-radius: var(--border-radius);
   padding: 1rem;
   background: #1F1A18;
@@ -66,11 +66,11 @@ div.popover {
 .suggestion-container.mod-property-value,
 .suggestion-container.mod-property-key {
   border-radius: var(--border-radius);
-  border: 1px solid rgb(58, 52, 46);
+  border: 1px solid var(--color-background-light);
 
   div {
      border-radius: var(--border-radius);
-     border: 1px solid rgb(58, 52, 46);
+     border: 1px solid var(--color-background-light);
   }
 }
 
@@ -79,10 +79,10 @@ div.popover {
   border: 0;
 }
 .mod-top-left-space {
-  background: #262626;
+  background: var(--color-background);
 }
 .mod-top-left-space .workspace-leaf {
-  background: rgb(58, 52, 46);
+  background: var(--color-background-light);
   border-radius: var(--border-radius);
   overflow: hidden;
   margin: 0.5rem;
@@ -93,18 +93,18 @@ div.popover {
 
 /* Make pinned documents on the side use the correct color */
 .mod-top-left-space .cm-scroller, .mod-top-left-space .markdown-preview-view {
-  background: rgb(58, 52, 46) !important;
+  background: var(--color-background-light) !important;
 }
 
 .el-pre pre {
-  border-radius: 1.5rem !important;
+  border-radius: var(--border-radius) !important;
   overflow: hidden;
 }
 
 /* leftmost action ribbon */
 .workspace-ribbon {
   padding-top: 1rem;
-  background:#262626;
+  background:var(--color-background);
   border: 0;
   margin: 0.5rem;
 }
@@ -112,24 +112,6 @@ div.popover {
 .workspace-tabs .workspace-tab-header {
   background: var(--color-background) !important;
 }
-
-/* .workspace-leaf-content[data-type="calendar"], */
-/* .mod-top-right-space .workspace-leaf-content:has([data-type="calendar"]) {
-  background: var(--color-background);
-
-  .view-content {
-    background: var(--color-background-light);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    margin-top: 0.5rem;
-    width: calc(100% - 0.5rem);
-    height: calc(100% - 3.5rem);
-    padding: 0.25rem;
-    padding-top: 0.5rem;
-  }
-
-
-} */
 
 .workspace-leaf-content[data-type="calendar"]  {
   margin-top: -0.6rem;
@@ -155,7 +137,7 @@ div.popover {
 
 /* File explorer */
 .workspace-sidedock-vault-profile {
-  background: #262626 !important;
+  background: var(--color-background) !important;
   border-top: 0 !important;
   padding-top: 0 !important;
   height: 3rem !important;
@@ -166,32 +148,31 @@ div.popover {
   border: 0;
 }
 
-.markdown-source-view .cm-sizer {
-  /* margin: 0 !important; */
-}
-
 body {
   --file-line-width: 100ch;
 }
 
 /* dataviews in reading mode on sidebar control panel */
 .mod-top-left-space .markdown-preview-section div.el-pre .node-insert-event {
-  background-color: #262626;
+  background-color: var(--color-background);
 }
 
+
+/* Callout boxes */
 .cm-embed-block.markdown-rendered,
 .cm-embed-block .markdown-rendered .callout,
 .el-div div[data-callout="warning"],
 .el-div div[data-callout="info"],
 .el-pre .block-language-tasks {
   border-radius: var(--border-radius);
-  border: 4px solid rgb(58, 52, 46);
+  border: 4px solid var(--color-background-light);
   padding: 1rem;
   padding-top: 1.25rem;
-  /* border: 1px solid hsla(0, 0%, 100%, 0.1) !important; */
+}
 
-
-
+.cm-embed-block.cm-callout {
+  border-color: hsla(0, 0%, 100%, 0.05) !important;
+  border-radius: var(--border-radius) !important;
 }
 
 
@@ -201,14 +182,14 @@ body {
 .el-div div[data-callout="info"] {
  &:hover {
     border-style: dashed;
-    border-radius: 1.5rem !important;
+    border-radius: var(--border-radius) !important;
   }
 }
 
 .cm-embed-block .markdown-rendered .callout[data-callout="info"],
 .el-div .callout[data-callout="info"] {
   border-color: #223041 !important;
-  border: 1px solid hsla(0, 0%, 100%, 0.1) !important;
+  border: 1px solid var(--color-dark-gray) !important;
 }
 
 .cm-embed-block.markdown-rendered .markdown-embed-link {
@@ -245,7 +226,7 @@ body {
   input {
     margin-top: 0.5rem;
     border-radius: 0.5rem;
-    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    border: 1px solid var(--color-dark-gray);
     padding-top: 0.25rem;
   }
 }
@@ -254,19 +235,12 @@ body {
 .workspace-split .workspace-leaf-resize-handle {
   border: 0px solid transparent;
   &:hover {
-    /* width: 90% !important; */
-    /* border: 10px solid blue; */
     display: flex;
     background: var(--color-background);
     height: 0.5rem !important;
     justify-content: center;
     align-items: flex-end;
     border: 0px;
-    /* display: flex;
-    border: 0px solid transparent;
-    background: transparent;
-    width: 100% !important;
-    height: 5rem !important; */
 
     &::after {
       content: "";
