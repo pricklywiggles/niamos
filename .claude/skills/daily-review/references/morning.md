@@ -1,9 +1,11 @@
 # Morning workflow
 
-The morning flow has three jobs in order:
+The morning flow has five jobs in order:
 1. Open today's daily note and read what's already there.
 2. Look back at the most recent prior daily note for undone work.
-3. Offer to carry that work forward to today, then leave the user to it.
+3. Carry that work forward to today **automatically — no prompt**.
+4. Insert today's habit-driven tasks into `## Habits`.
+5. If a calendar source is available, insert today's events into `## Schedule`.
 
 ## Step 1: Open today, read context
 
@@ -63,36 +65,28 @@ yesterday's unchecked habit task either fires again today on its own
 cadence or it doesn't — carrying it forward as an inline checkbox would
 double-insert.
 
-## Step 4: Surface and ask
+## Step 4: Carry forward (automatic — no prompt)
 
-If both lists are empty: say "nothing to carry forward from
-`<prior-date>`" and end. No question needed.
+If both lists are empty, skip silently. Otherwise just do it — don't
+ask. The user wants frictionless mornings; the prompt was friction.
+They can manually delete anything they don't want in today's `## Todo`
+after the fact.
 
-If non-empty, present a single AskUserQuestion with the options:
-- **Carry everything forward** — reschedule all (A) to today, copy all
-  (B) into today's note's `## Notes` as new inline checkboxes.
-- **Pick which** — present a second multi-select AskUserQuestion listing
-  each item; carry forward only the selected ones.
-- **Carry nothing forward** — leave the prior note alone, do nothing.
+For (A) explicitly-dated tasks (📅 or ⏳ on or before the prior daily's
+date, found via `obsidian tasks todo verbose format=json`): Edit the
+source file to replace the existing emoji-date with today's date. These
+are project/goal tasks elsewhere in the vault; rescheduling moves them
+forward without duplication. **Skip inline tasks from daily notes here**
+— they're handled as (B) instead, to avoid mutating yesterday's daily
+record.
 
-Keep the option descriptions tight. The user is doing this every day; they
-shouldn't have to read a paragraph.
+For (B) inline `- [ ]` checkboxes in the prior daily's body (excluding
+`## Habits`): copy each verbatim into today's daily's `## Todo` section,
+appending after any existing checkboxes. Yesterday's daily is left as
+the historical record; today's gets a fresh copy.
 
-## Step 5: Execute the carry-forward
-
-For (A) tasks (rescheduling): for each chosen task, Edit the source file
-to replace the existing `📅 YYYY-MM-DD` or `⏳ YYYY-MM-DD` emoji-date
-with today's date. If the task has no date emoji, add `📅 <today>` at
-the end of the line. The task stays in its source file — the Tasks
-plugin block in today's daily will pick it up automatically because the
-new date matches today.
-
-For (B) inline checkboxes: copy each one verbatim into today's daily
-note's `## Todo` section. Edit the today daily, inserting the lines at
-the end of the `## Todo` block (after any existing checkboxes). Optionally
-suggest the user convert them to proper Tasks-syntax (with a due date) but
-don't do it for them — that's a judgment call about whether the task is
-real or just a thought.
+If anything was carried, mention the counts in the close summary. Don't
+list every item — the user can read their own Todo section.
 
 ## Step 5: Insert today's habit-driven tasks
 
@@ -123,11 +117,58 @@ plain Edit suffices.
 If the script returns an empty list, do nothing. Don't print "no habits
 today" — the empty `## Habits` section speaks for itself.
 
-## Step 6: Close
+## Step 6: Insert today's calendar events
+
+Calendar data comes from two optional sources. Detect what's available
+*in this session* and use whichever subset responds:
+
+- **mcp-ical** (macOS Calendar via EventKit) — check if the
+  `mcp__mcp-ical__list_events` tool is in the loaded tool list. If
+  present, call it with `start_date=<today>T00:00:00` and
+  `end_date=<today>T23:59:59`. Event times come back in UTC; convert to
+  the user's local timezone.
+- **gws** (Google Workspace CLI) — try `gws calendar +agenda --today
+  --format json` via Bash. If the binary is missing or auth fails, treat
+  as unavailable; don't surface the error.
+
+If neither source returns events (or neither is available), skip this
+step entirely — don't create an empty `## Schedule` section.
+
+Otherwise, build a markdown table and insert it at the top of the daily
+note, immediately after the frontmatter and before `## Todo`:
+
+```
+## Schedule
+
+| Time | Event |
+|---|---|
+| All-day | Federal holiday |
+| 10:00 AM | Team standup |
+| 6:30 PM | Dinner — Riverside Bistro |
+```
+
+Formatting rules:
+- Sort rows by start time, all-day events first.
+- Time column: `All-day` for all-day events; `H:MM AM/PM` otherwise (no
+  leading zero on the hour; local timezone).
+- Event column: the event title. If the event has a location, append
+  ` — <location>` after the title; truncate location to ~40 chars if
+  longer. Don't include notes, attendees, or meet links — the daily
+  shows what's happening, not the full event payload.
+- If both sources return overlapping events (same time, similar title),
+  list them once — but don't fight to dedup perfectly; near-duplicates
+  are a sign that two accounts have the same event and that's fine.
+
+Idempotency: if `## Schedule` already exists in today's daily, Edit
+**replaces** the entire section (heading + table + trailing blank line)
+rather than appending a second one. Re-running morning review should
+refresh the calendar, not stack new tables.
+
+## Step 7: Close
 
 One short summary line: "Carried forward 3 tasks, 1 inline note.
-4 habits queued. `<today>` is open." Or, if nothing: "Nothing to carry.
-`<today>` is open."
+4 habits queued, 2 events on the calendar. `<today>` is open." Or, if
+nothing: "Nothing to carry. `<today>` is open."
 
 Don't list everything you did. The summary's job is "yes, I did the
 thing", not "here's a detailed receipt".

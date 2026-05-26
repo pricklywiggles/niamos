@@ -28,6 +28,10 @@ The Core Daily Notes plugin (configured `folder=daily`, `format=YYYY-MM-DD`, bla
 - `## Today` — Dataview block surfacing items hitting their date marker today: [[Goal]]s whose `next_assessment_date` or `target_completion_date` is today, [[Project]]s whose `due_date` is today. See [[Bases and Dataview]] for query syntax.
 - `## Tasks` — Tasks plugin query block: `(due on <date>) OR (scheduled on <date>)`. Shows all tasks for the day regardless of done/not-done status — completed items render with a strikethrough so they're visually distinct. Renders live in reading mode.
 
+## Injected sections (conditional, not in template)
+
+- `## Schedule` — markdown table of today's calendar events, inserted at the top of the daily (immediately after frontmatter, before `## Todo`) by morning daily-review when at least one calendar source is available. Two columns: `Time` (`All-day` or `H:MM AM/PM` local) and `Event` (title, optionally suffixed with ` — <location>`). Re-running morning review replaces the section in place rather than stacking duplicates. Sources are detected per-session: the `mcp__mcp-ical__list_events` tool (macOS Calendar / EventKit) and the `gws calendar +agenda` CLI (Google Workspace). If neither is available the section is skipped entirely — its absence is not an error.
+
 ## The Tasks plugin date inference (important)
 
 The Tasks plugin has `useFilenameAsScheduledDate: true` enabled, scoped to `daily/`. This means: any `- [ ]` task you write directly in a daily note **automatically inherits that day as its scheduled date**, no `📅` or `⏳` emoji required. So an inline checkbox in today's daily shows up in the `## Tasks` block of today's daily without extra work.
@@ -37,8 +41,8 @@ Tasks elsewhere (in [[Project]] files, etc.) need explicit date emojis to surfac
 ## The daily-review skill
 
 The [[Skills|daily-review skill]] is the main workflow for working with Daily notes. Two modes:
-- **Morning**: opens today, finds the most recent prior daily, carries forward unfinished inline items (excluding the prior daily's `## Habits` section), inserts today's firing habit tasks into `## Habits`.
-- **Evening**: opens today, prompts to mark any unchecked `## Habits` complete, writes back completion dates to each matching habit page's `- last:` field, prompts for highlights, previews tomorrow's commitments.
+- **Morning**: opens today, finds the most recent prior daily, **automatically** carries forward unfinished inline items (excluding the prior daily's `## Habits` section — no prompt; the user manages overflow by deleting from today's `## Todo` themselves), inserts today's firing habit tasks into `## Habits`, and (if any calendar source is available) inserts today's events into `## Schedule` at the top of the daily.
+- **Evening**: opens today, prompts to mark any unchecked `## Habits` complete, writes back completion dates to each matching habit page's `- last:` field, prompts for highlights, and surfaces a 7-day look-ahead (events from any available calendar source + tasks due in that window) in chat — no file edits.
 
 ## Lifecycle
 

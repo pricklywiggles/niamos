@@ -3,16 +3,18 @@ name: daily-review
 description: >-
   Run the morning planning or evening review flow against today's daily note
   in this Obsidian vault. **Morning** opens the daily, reads what's already
-  there, finds the most recent prior daily note, surfaces tasks that didn't
-  get done (overdue + inline incomplete from the prior daily), and offers
-  to carry them forward. **Evening** opens the daily, surfaces what got
-  done today, prompts for the day's highlights and appends them to
-  `## Highlights`, and previews tomorrow's commitments (tasks/meetings/
-  events due tomorrow). Use this skill whenever the user says: "morning
-  review", "morning planning", "let's plan today", "what's on today", "start
-  my day", "daily plan" → morning; "evening review", "wrap up the day",
-  "end of day", "daily review", "what got done today", "what's tomorrow"
-  → evening; or the ambiguous "daily review" / "daily" → ask which.
+  there, finds the most recent prior daily note, carries unfinished work
+  forward automatically (no prompt), inserts today's firing habit tasks,
+  and inserts today's calendar events into a `## Schedule` table at the
+  top of the daily. **Evening** opens the daily, surfaces what got done
+  today, writes back habit completions, prompts for the day's highlights
+  and appends them to `## Highlights`, and surfaces a 7-day look-ahead
+  (calendar events + tasks) in chat. Use this skill whenever the user
+  says: "morning review", "morning planning", "let's plan today", "what's
+  on today", "start my day", "daily plan" → morning; "evening review",
+  "wrap up the day", "end of day", "daily review", "what got done today",
+  "what's tomorrow" → evening; or the ambiguous "daily review" / "daily"
+  → ask which.
   Accepts an explicit date argument (`for 2026-05-21`, `yesterday`, etc.)
   to operate on a non-today daily; defaults to today otherwise. The skill's
   whole reason for existing is that the owner's "Establish Daily
@@ -80,8 +82,9 @@ Obsidian for the user to continue with.
 - **Frictionless every day is the goal.** This skill's existence is
   justified only if the user keeps doing it. Over-prompting kills the
   habit. Default to silent progress: ask only for the human-only inputs
-  (highlights, carryover yes/no), surface everything else briefly without
-  awaiting confirmation.
+  (highlights, unchecked-habit confirmation in evening), surface
+  everything else briefly without awaiting confirmation. Morning
+  carryover is **automatic** — no asking which items to move.
 - **The daily note is the source of truth.** Don't reach for separate
   scratch files, conversation memory, or external tools to track what got
   said. If something matters, it goes in the daily note (Highlights,
@@ -96,12 +99,12 @@ Obsidian for the user to continue with.
   file to update the `📅 YYYY-MM-DD` emoji-date. Don't add a duplicate
   task to the daily note. Use Edit, not the CLI, because the CLI's `task`
   command toggles done/todo status but doesn't reschedule.
-- **Inline tasks in the prior daily's body are second-class.** If the
-  user wrote `- [ ] thing` directly into the previous daily's `## Notes`,
-  surface them but don't try to migrate them via task-line editing —
-  instead, show them to the user and let them decide whether to copy the
-  line into today's note, leave it in the old daily, or convert it to a
-  proper Tasks-syntax checkbox with a due date.
+- **Inline tasks in the prior daily's body are second-class.** They get
+  copied verbatim into today's `## Todo` as part of the auto-carryover;
+  yesterday's daily isn't mutated (its lines stay as the historical
+  record). If the user wants any of them converted to Tasks-syntax with
+  explicit dates, they'll do it themselves after the fact — don't try
+  to be clever.
 - **Don't fabricate "tomorrow's commitments".** The evening preview should
   show only what's actually in the vault (Tasks with due/scheduled =
   tomorrow). If there's nothing, say "nothing on the books for

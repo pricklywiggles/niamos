@@ -9,7 +9,8 @@ Two modes:
 
     habits.py evening <YYYY-MM-DD>
         Scan daily/<date>.md's ## Habits section for completed tasks
-        (`- [x] ... ✅ <date>` or `- [x] ...`), match each name
+        (any `- [x]` line — the trailing ✅ date stamp is ignored since
+        the daily's filename is the authoritative day), match each name
         (case-insensitive) against active-habit task lines, and rewrite
         the matching habit-page line's `- last:` to <date>. Emits JSON
         {updated: [...], unchecked: [...]}.
@@ -207,8 +208,14 @@ def cmd_morning(today):
     print(json.dumps({"fired": fired}, indent=2))
 
 
-def collect_completed_names(daily_text, today):
-    """Scan the daily's ## Habits section. Return (completed_names_lower, unchecked_names)."""
+def collect_completed_names(daily_text):
+    """Scan the daily's ## Habits section. Return (completed_names_lower, unchecked_names).
+
+    Any `- [x]` line counts as a completion for the daily's date — the daily's
+    filename is the authoritative day, the ✅ date stamp is just a click-time
+    artifact (the Tasks plugin auto-stamps today's date on click, which may
+    differ from the activity's actual day, e.g. a retroactive evening review).
+    """
     body = extract_section(daily_text, "## Habits")
     if body is None:
         return ([], [])
@@ -219,19 +226,12 @@ def collect_completed_names(daily_text, today):
         if not m:
             continue
         status, rest = m.group(1), m.group(2)
-        # Strip trailing ✅ date if present
-        m_done = DONE_DATE_RE.search(rest)
-        done_date = None
-        if m_done:
-            done_date = m_done.group(1)
-            rest = rest[: m_done.start()]
+        rest = DONE_DATE_RE.sub("", rest)
         name = rest.strip()
         if not name:
             continue
         if status.lower() == "x":
-            # Only credit completions actually marked today (or undated, treat as today).
-            if done_date is None or done_date == today.isoformat():
-                completed.append(name.lower())
+            completed.append(name.lower())
         else:
             unchecked.append(name)
     return (completed, unchecked)
@@ -275,7 +275,7 @@ def cmd_evening(today):
     if not daily_path.exists():
         sys.exit(f"ERROR: daily note not found: daily/{today.isoformat()}.md")
 
-    completed_lower, unchecked = collect_completed_names(daily_path.read_text(), today)
+    completed_lower, unchecked = collect_completed_names(daily_path.read_text())
 
     updated = []
     seen_global = set()

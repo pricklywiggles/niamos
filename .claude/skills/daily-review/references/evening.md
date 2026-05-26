@@ -74,25 +74,59 @@ If they give content, append each highlight as a bullet to the
 `## Highlights` section. Format: `- <highlight text>`. Use Edit to
 insert after the heading.
 
-## Step 3: Preview tomorrow
+## Step 3: Look ahead 7 days
 
-Compute tomorrow's ISO date. Query tasks due/scheduled tomorrow:
+The evening preview pulls calendar events and tasks for the next 7 days
+(tomorrow through tomorrow + 6) and surfaces them in chat. **No file
+edits** — this is a heads-up briefing, not something that gets
+persisted. The user will run morning review tomorrow to materialize
+tomorrow's slice into the daily note.
+
+Calendar sources (same detection as morning Step 7 — use whichever
+subset is available; skip silently if neither is):
+
+- **mcp-ical** — call `mcp__mcp-ical__list_events` with
+  `start_date=<tomorrow>T00:00:00` and `end_date=<tomorrow+6>T23:59:59`.
+  Convert UTC times to the user's local timezone.
+- **gws** — run `gws calendar +agenda --days 7 --format json` via Bash.
+
+Also query tasks due in the window:
 
 ```
 obsidian tasks todo verbose format=json
 ```
 
-Filter to tasks with `📅 <tomorrow>` or `⏳ <tomorrow>`. Also check if
-`daily/<tomorrow>.md` exists — if it does, the user has pre-planned
-something there; mention that.
+Filter to tasks with `📅` or `⏳` dates in `[tomorrow, tomorrow+6]`.
 
-Surface as a tight one-liner: "Tomorrow: 3 tasks due (including
-[representative]), no pre-planned daily note." Or "Tomorrow: nothing on
-the books." Don't pad. The point is to seed mental prep for tomorrow,
-not exhaustively brief the user.
+Display in chat, grouped by day, in date order. Each day gets a header
+line; days with nothing show `— nothing scheduled` so gaps are visible
+too:
 
-If there's a calendar plugin or event source in the vault (likely
-none, but check), include events/meetings. If not, only tasks.
+```
+Mon
+  - All-day: Federal holiday
+  - 10:00 AM: Team standup
+  - 📅 Task: file taxes
+
+Tue
+  - All-day: Conference travel
+
+Wed
+  — nothing scheduled
+
+...
+```
+
+Also check if `daily/<tomorrow>.md` or other future daily notes exist —
+if any do, mention them at the end ("Pre-planned daily exists for Tue.")
+so the user knows there's prior context they wrote earlier.
+
+If neither calendar source is available, fall back to tasks-only —
+still group by day, still surface empty days.
+
+Keep it tight. The point is mental prep, not an exhaustive briefing —
+trim event details (no meet links, no notes) and clip locations past
+~40 chars.
 
 ## Step 4: Close
 
