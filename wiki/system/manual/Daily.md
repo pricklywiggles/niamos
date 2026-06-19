@@ -27,6 +27,7 @@ The Core Daily Notes plugin (configured `folder=daily`, `format=YYYY-MM-DD`, bla
 - `## Highlights` — what's worth remembering from this day. Captured by the [[Skills|daily-review skill]] in its evening flow.
 - `## Today` — Dataview block surfacing items hitting their date marker today: [[Goal]]s whose `next_assessment_date` or `target_completion_date` is today, [[Project]]s whose `due_date` is today. See [[Bases and Dataview]] for query syntax.
 - `## Tasks` — Tasks plugin query block: `(due on <date>) OR (scheduled on <date>)`. Shows all tasks for the day regardless of done/not-done status — completed items render with a strikethrough so they're visually distinct. Renders live in reading mode.
+- `## Past due tasks` — Tasks plugin query block: `not done`, `(due before <date>) OR (scheduled before <date>)`, `path does not include daily/`, `path does not include archives/`. Surfaces overdue tasks from `projects/`, `goals/`, `habits/`, and `wiki/` — anywhere with explicit `📅` or `⏳` dates that have slipped. Daily-note tasks are excluded because morning review's auto-carryover already handles them; archives are excluded because finished/abandoned items shouldn't pull attention.
 
 ## Injected sections (conditional, not in template)
 

@@ -3,7 +3,6 @@ type: daily
 date: <% tp.file.title %>
 ---
 ## Todo
-- [ ] Morning review
 
 ## Habits
 
@@ -25,4 +24,12 @@ WHERE (type = "goal" AND next_assessment_date = date(this.file.name))
 ## Tasks
 ```tasks
 (due on <% tp.file.title %>) OR (scheduled on <% tp.file.title %>)
+```
+
+## Past due tasks
+```tasks
+not done
+(due before <% tp.file.title %>) OR (scheduled before <% tp.file.title %>)
+path does not include daily/
+path does not include archives/
 ```

@@ -93,11 +93,14 @@ Obsidian creates it.
 
 **New-topic mode (create):**
 ```
-obsidian create path="wiki/<chosen-subfolder>/<Filename>.md" content="---\ntype: wiki\n---\n"
+obsidian templater:create-from-template template="templates/wiki.md" file="wiki/<chosen-subfolder>/<Filename>.md"
 ```
 Filename is Title Case matching the human topic (e.g.,
 `Sourdough Hydration.md`), no Type prefix (Wiki doesn't use one per
 CLAUDE.md "Naming").
+
+After creation, read the file to confirm `type: wiki` is present. If not,
+Templater did not fire — surface this to the user and stop.
 
 ### 6. Open the file
 

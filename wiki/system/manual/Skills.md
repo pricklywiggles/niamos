@@ -6,6 +6,8 @@ type: wiki
 
 Vault-local Claude skills live in `.claude/skills/`. Each one wraps a workflow that's tedious to do by hand and benefits from determinism. Skills call the [[Plugin Stack|Obsidian CLI]] and, where atomicity matters, delegate to Python scripts with rollback.
 
+There's also a **global** Claude skill, [[Save to Niamos Skill|`save-to-niamos`]], that lives in `~/.claude/skills/` (outside this repo) and lets the user save arbitrary content into the vault from any context — a coding project, a standalone chat, anywhere. The page linked above is the backup that lets you restore it on a fresh machine.
+
 ## The skills
 
 | Skill | What it does | Triggers on |

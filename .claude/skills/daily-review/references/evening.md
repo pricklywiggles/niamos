@@ -34,7 +34,14 @@ judgment. Some days are like that, and the skill shouldn't moralize.
 Before prompting for highlights, conditionally handle unchecked habits
 and write back completions.
 
-First, check today's daily's `## Habits` section:
+**First, auto-check "Evening review":** the act of running this skill
+*is* the evening review. Flip `- [ ] Evening review` in today's
+`## Habits` section to `- [x] Evening review ✅ <today>` via Edit. Skip
+silently if the line isn't there (habit doesn't exist, or already
+checked). Doing this before the unchecked-habits prompt below keeps it
+out of that prompt, and the write-back script below will pick it up.
+
+Then check today's daily's `## Habits` section:
 - If any `- [ ]` lines remain (uncompleted habit tasks), prompt the user
   via AskUserQuestion: "N habit tasks are still unchecked: <names>. Want
   to mark any complete?" with options: "All of them done", "None — leave

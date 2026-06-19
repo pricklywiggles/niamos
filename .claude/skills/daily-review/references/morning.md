@@ -41,17 +41,14 @@ step 3 entirely — there's nothing to carry forward.
 Two sources for "didn't get done":
 
 **(A) Tasks across the vault that were due on or before the prior
-daily's date and are still not done.** Use:
+daily's date and are still not done.** Run:
 
 ```
-obsidian tasks todo verbose format=json
+.claude/skills/daily-review/scripts/past_due.py <prior-daily-date>
 ```
 
-This returns every incomplete task in the vault with its file path and
-line number. The Tasks plugin's date format is `📅 YYYY-MM-DD` (due
-date) or `⏳ YYYY-MM-DD` (scheduled date). Parse each task line for
-either emoji-date and filter to those where the date is ≤ prior-daily's
-date.
+Returns `{"tasks": [{"file": "...", "line": "N", "date": "YYYY-MM-DD", "text": "- [ ] ..."}]}`.
+An empty list is the authoritative answer that nothing is past due.
 
 **(B) Inline `- [ ]` checkboxes written directly in the prior daily's
 body** (not Tasks-plugin queries, but actual checkbox lines in `## Todo`,
@@ -72,13 +69,11 @@ ask. The user wants frictionless mornings; the prompt was friction.
 They can manually delete anything they don't want in today's `## Todo`
 after the fact.
 
-For (A) explicitly-dated tasks (📅 or ⏳ on or before the prior daily's
-date, found via `obsidian tasks todo verbose format=json`): Edit the
-source file to replace the existing emoji-date with today's date. These
-are project/goal tasks elsewhere in the vault; rescheduling moves them
-forward without duplication. **Skip inline tasks from daily notes here**
-— they're handled as (B) instead, to avoid mutating yesterday's daily
-record.
+For (A) explicitly-dated tasks returned by `past_due.py`: Edit
+`task.file` to replace the emoji-date in that line with today's date.
+These are project/goal tasks elsewhere in the vault; rescheduling moves
+them forward without duplication. (`past_due.py` already excludes
+`daily/` files, so no risk of mutating yesterday's daily record.)
 
 For (B) inline `- [ ]` checkboxes in the prior daily's body (excluding
 `## Habits`): copy each verbatim into today's daily's `## Todo` section,
@@ -116,6 +111,18 @@ plain Edit suffices.
 
 If the script returns an empty list, do nothing. Don't print "no habits
 today" — the empty `## Habits` section speaks for itself.
+
+## Step 5.5: Auto-check "Morning review"
+
+The act of running this skill *is* the morning review. After habit
+insertion, flip `- [ ] Morning review` in today's `## Habits` section to
+`- [x] Morning review ✅ <today>` via Edit. Skip silently if the line
+isn't there (habit doesn't exist, or already checked) — don't error.
+
+Evening's habit write-back script will pick this up tomorrow morning when
+it scans for `- [x]` lines in the prior daily — no separate write-back
+needed here. The habit page's `- last:` updates on the next evening
+review.
 
 ## Step 6: Insert today's calendar events
 
@@ -164,7 +171,36 @@ Idempotency: if `## Schedule` already exists in today's daily, Edit
 rather than appending a second one. Re-running morning review should
 refresh the calendar, not stack new tables.
 
-## Step 7: Close
+## Step 7: Force-refresh Dataview views
+
+After all writes are done (carryover, habits, calendar), refresh every
+markdown leaf that has Dataview content (block queries or inline DQL):
+
+```bash
+obsidian dev:cdp method=Runtime.evaluate params='{"expression": "(() => { const leaves = app.workspace.getLeavesOfType(\"markdown\").filter(l => l.view && l.view.contentEl && l.view.contentEl.querySelector(\".block-language-dataview, span.dataview\")); const prev = app.workspace.activeLeaf; leaves.forEach(leaf => { app.workspace.setActiveLeaf(leaf, {focus: false}); app.commands.executeCommandById(\"dataview:dataview-rebuild-current-view\"); }); if (prev) app.workspace.setActiveLeaf(prev, {focus: false}); return \"rebuilt \" + leaves.length + \" leaves\"; })()", "returnByValue": true}'
+```
+
+Why this and not the simpler `dataview:dataview-force-refresh-views`
+command: that command doesn't refresh leaves pinned in the sidebar
+(empirically verified — the Control Panel stayed on yesterday's date
+across morning runs). The targeted approach works around this by
+iterating every markdown leaf that contains Dataview content, briefly
+making each one the "active" leaf without taking focus, then running
+`dataview:dataview-rebuild-current-view` against it. The previous
+active leaf is restored at the end, so the user's focus is undisturbed.
+
+Dataview caches rendered output per-leaf and doesn't auto-flush when
+`date(today)` rolls over at midnight, because no underlying *file*
+changed — Dataview's invalidation is metadata-driven, not clock-driven.
+Without this step, the Control Panel's `### Today` block and the
+daily's own `## Today` / `## Tasks` blocks can keep showing yesterday's
+results even though today's daily exists.
+
+If the iteration ever proves too slow on a large vault, fall back to
+`dataview:dataview-drop-cache` (heavier — drops the whole index, slower
+re-render on next view, but reliable).
+
+## Step 8: Close
 
 One short summary line: "Carried forward 3 tasks, 1 inline note.
 4 habits queued, 2 events on the calendar. `<today>` is open." Or, if
